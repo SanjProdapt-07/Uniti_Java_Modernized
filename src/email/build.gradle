@@ -16,7 +16,7 @@ description = 'Email Service'
 group = "email"
 version = "0.1.0-SNAPSHOT"
 
-def opentelemetryInstrumentationVersion = "2.31.1"
+def opentelemetryInstrumentationVersion = "2.33.1"
 def openFeatureSdkVersion = "1.23.0"
 def flagdProviderVersion = "0.15.0"
 def openFeatureOtelHookVersion = "3.3.1"
