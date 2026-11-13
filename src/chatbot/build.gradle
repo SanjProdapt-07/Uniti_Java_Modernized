@@ -16,7 +16,7 @@ description = 'Chatbot Service'
 group = "chatbot"
 version = "0.1.0-SNAPSHOT"
 
-def opentelemetryInstrumentationVersion = "2.31.1"
+def opentelemetryInstrumentationVersion = "2.33.1"
 
 tasks.withType(JavaCompile).configureEach {
     options.release = 21
