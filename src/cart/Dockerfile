@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-FROM --platform=${BUILDPLATFORM} docker.io/library/eclipse-temurin:21-jdk AS builder
+FROM --platform=${BUILDPLATFORM} docker.io/library/eclipse-temurin:24-jdk AS builder
 WORKDIR /usr/src/app/
 
 COPY ./src/cart/gradlew* ./src/cart/settings.gradle* ./src/cart/build.gradle ./
@@ -19,9 +19,9 @@ RUN ./gradlew --no-daemon bootJar test -PprotoSourceDir=./proto
 
 # -----------------------------------------------------------------------------
 
-FROM ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.61@sha256:9df7b8dfbaf01d20eaedcd6de084c557074046f87cfc0413b7939ae18087c249 AS grpc-health-probe
+FROM ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.62@sha256:1a900fcfc1b8e680511670908b47d9bc3f8464f88d9159f961c5d55c254b8140 AS grpc-health-probe
 
-FROM docker.io/library/eclipse-temurin:21-jre
+FROM docker.io/library/eclipse-temurin:24-jre
 
 WORKDIR /usr/src/app/
 
