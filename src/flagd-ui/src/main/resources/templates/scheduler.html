@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments :: head}"></head>
+  <body>
+    <div class="relative min-h-screen">
+      <nav th:replace="~{fragments :: navbar}"></nav>
+
+      <div class="container mx-auto px-4 py-8">
+        <div th:replace="~{scheduler-status :: status}"></div>
+
+        <p id="scheduler-error" hidden class="mb-4 rounded-md bg-red-900 p-4 text-sm text-white"></p>
+
+        <form id="scheduler-form" onsubmit="return false">
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div class="rounded-md bg-gray-800 p-6 text-gray-300 shadow-md">
+              <p class="mb-4 text-lg font-semibold">Timing</p>
+
+              <fieldset class="fieldset mb-2">
+                <label>
+                  <span class="fieldset-label mb-1">Interval (seconds)</span>
+                  <input type="number" name="interval_seconds" th:value="${form.intervalSeconds}" class="w-full input" min="1" />
+                </label>
+              </fieldset>
+              <fieldset class="fieldset mb-2">
+                <label>
+                  <span class="fieldset-label mb-1">Minimum duration (seconds)</span>
+                  <input type="number" name="min_duration_seconds" th:value="${form.minDurationSeconds}" class="w-full input" min="1" />
+                </label>
+              </fieldset>
+              <fieldset class="fieldset mb-2">
+                <label>
+                  <span class="fieldset-label mb-1">Maximum duration (seconds)</span>
+                  <input type="number" name="max_duration_seconds" th:value="${form.maxDurationSeconds}" class="w-full input" min="1" />
+                </label>
+              </fieldset>
+              <fieldset class="fieldset mb-2">
+                <label>
+                  <span class="fieldset-label mb-1">Flags at once (per interval)</span>
+                  <input type="number" name="concurrency" th:value="${form.concurrency}" class="w-full input" min="1" th:max="${form.maxConcurrency}" />
+                </label>
+              </fieldset>
+              <fieldset class="fieldset mb-2">
+                <label>
+                  <span class="fieldset-label mb-1">Seed (optional, for reproducible patterns)</span>
+                  <input type="number" name="seed" th:value="${form.seed}" class="w-full input" />
+                </label>
+              </fieldset>
+
+              <div class="mt-4 flex flex-wrap gap-2">
+                <button
+                  th:each="preset : ${presets}"
+                  type="button"
+                  class="rounded bg-gray-700 px-3 py-2 text-xs font-medium text-gray-200 transition-colors duration-200 hover:bg-gray-600"
+                  data-action="preset"
+                  th:attr="data-name=${preset.name},data-interval=${preset.interval},data-min=${preset.min},data-max=${preset.max}"
+                  th:text="${preset.label}"
+                >
+                  Preset
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-md bg-gray-800 p-6 text-gray-300 shadow-md">
+              <div class="mb-4 flex items-center justify-between">
+                <p class="text-lg font-semibold">Flags</p>
+                <div class="flex gap-2">
+                  <button
+                    type="button"
+                    class="rounded bg-gray-700 px-3 py-2 text-xs font-medium text-gray-200 transition-colors duration-200 hover:bg-gray-600"
+                    data-action="select_all"
+                  >
+                    All
+                  </button>
+                  <button
+                    type="button"
+                    class="rounded bg-gray-700 px-3 py-2 text-xs font-medium text-gray-200 transition-colors duration-200 hover:bg-gray-600"
+                    data-action="select_none"
+                  >
+                    None
+                  </button>
+                </div>
+              </div>
+
+              <p th:if="${available.isEmpty()}" class="text-sm text-warning">
+                No schedulable flags found in the current configuration.
+              </p>
+
+              <div class="max-h-[70vh] overflow-y-auto">
+                <div
+                  th:each="flag : ${available}"
+                  class="border-b border-gray-700 py-2 last:border-b-0"
+                >
+                  <th:block th:if="${flag.variants.size() == 1}">
+                    <label class="flex items-center gap-3 text-sm">
+                      <input type="checkbox" th:name="'variants[' + ${flag.name} + '][]'" th:value="${flag.variants.get(0)}" th:checked="${form.selected(flag.name, flag.variants.get(0))}" />
+                      <span class="font-medium" th:text="${flag.name}">flag</span>
+                    </label>
+                  </th:block>
+                  <th:block th:unless="${flag.variants.size() == 1}">
+                    <div class="mb-1 flex items-center justify-between">
+                      <span class="text-sm font-medium" th:text="${flag.name}">flag</span>
+                      <button
+                        type="button"
+                        class="text-xs text-blue-400 hover:text-blue-300"
+                        data-action="toggle_flag"
+                        th:attr="data-flag=${flag.name}"
+                      >
+                        toggle all
+                      </button>
+                    </div>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 pl-1">
+                      <label th:each="variant : ${flag.variants}" class="flex items-center gap-2 text-xs">
+                        <input type="checkbox" th:name="'variants[' + ${flag.name} + '][]'" th:value="${variant}" th:checked="${form.selected(flag.name, variant)}" />
+                        <span class="text-gray-300" th:text="${variant}">variant</span>
+                      </label>
+                    </div>
+                  </th:block>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div th:replace="~{scheduler-status :: actions}"></div>
+        </form>
+
+        <div th:replace="~{scheduler-status :: history}"></div>
+      </div>
+    </div>
+  </body>
+</html>

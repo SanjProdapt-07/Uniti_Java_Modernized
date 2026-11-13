@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments :: head}"></head>
+  <body>
+    <div class="relative min-h-screen">
+      <nav th:replace="~{fragments :: navbar}"></nav>
+
+      <form id="flags-form" onsubmit="return false">
+        <div
+          th:fragment="grid"
+          id="flags-grid"
+          class="container mx-auto px-4 py-8"
+          th:attr="data-version=${version}"
+        >
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              th:each="card : ${cards}"
+              class="mb-4 flex flex-auto flex-col justify-between rounded-md bg-gray-800 p-6 text-gray-300 shadow-md"
+            >
+              <div>
+                <p class="mb-4 text-lg font-semibold" th:text="${card.name}">flag</p>
+                <p class="mb-4 text-sm" th:text="${card.description}">description</p>
+              </div>
+              <div>
+                <div class="flex items-center justify-between">
+                  <fieldset class="fieldset mb-2">
+                    <label>
+                      <select
+                        th:name="${card.name}"
+                        class="w-full select"
+                        data-flag-select
+                      >
+                        <option
+                          th:each="option : ${card.options}"
+                          th:value="${option}"
+                          th:text="${option}"
+                          th:selected="${option == card.selected}"
+                        >
+                          option
+                        </option>
+                      </select>
+                    </label>
+                  </fieldset>
+                  <div th:if="${card.targeting}" class="text-sm mb-2 text-warning">
+                    This flag has targeting rules.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

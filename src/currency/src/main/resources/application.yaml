@@ -1,0 +1,28 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: currency
+  grpc:
+    server:
+      port: ${CURRENCY_PORT:7001}
+      # grpc.health.v1.Health is provided by HealthService (always SERVING, like the original).
+      health:
+        enabled: false
+      # The original gave the server 4s to drain on SIGTERM/SIGINT.
+      shutdown:
+        grace-period: 4s
+
+currency:
+  # IPV6_ENABLED=true makes the server listen on [::] instead of 0.0.0.0 (see CurrencyApplication).
+  ipv6-enabled: ${IPV6_ENABLED:false}
+  # Instrumentation version of the demo.exchange.conversions meter (VERSION env var, "unknown" if unset).
+  version: ${VERSION:unknown}
+
+otel:
+  exporter:
+    otlp:
+      # The original exported over OTLP/gRPC; compose points OTEL_EXPORTER_OTLP_ENDPOINT at the
+      # collector's gRPC port (4317), whereas the Java SDK defaults to http/protobuf.
+      protocol: ${OTEL_EXPORTER_OTLP_PROTOCOL:grpc}

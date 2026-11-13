@@ -1,0 +1,45 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+# Same environment variables as the original Go service. CHECKOUT_PORT, CART_ADDR, CURRENCY_ADDR,
+# EMAIL_ADDR, PAYMENT_ADDR, PRODUCT_CATALOG_ADDR and SHIPPING_ADDR are required (the original
+# panicked at startup without them, here the placeholders fail to resolve); KAFKA_ADDR is
+# optional: without it no order event is produced.
+spring:
+  application:
+    name: checkout
+  grpc:
+    server:
+      port: ${CHECKOUT_PORT}
+    client:
+      channel:
+        cart:
+          target: ${CART_ADDR}
+        currency:
+          target: ${CURRENCY_ADDR}
+        payment:
+          target: ${PAYMENT_ADDR}
+        product-catalog:
+          target: ${PRODUCT_CATALOG_ADDR}
+  kafka:
+    bootstrap-servers: ${KAFKA_ADDR:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      # The Go producer used RequiredAcks = NoResponse ("may swallow failed messages") to work
+      # around a Sarama issue with a restarted single broker; kept for the same behavior.
+      acks: "0"
+
+checkout:
+  shipping-addr: ${SHIPPING_ADDR}
+  email-addr: ${EMAIL_ADDR}
+  kafka:
+    addr: ${KAFKA_ADDR:}
+    topic: ${KAFKA_TOPIC:orders}
+
+otel:
+  instrumentation:
+    # PlaceOrder creates the "<topic> publish" producer span itself (with the demo's attributes),
+    # the Kafka client instrumentation would add a second one.
+    kafka:
+      enabled: false

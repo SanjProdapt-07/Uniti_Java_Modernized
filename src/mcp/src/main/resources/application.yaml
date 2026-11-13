@@ -1,0 +1,35 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: mcp
+  ai:
+    mcp:
+      server:
+        # FastMCP("astronomy-shop-mcp"), streamable HTTP transport at /mcp, synchronous tools
+        name: astronomy-shop-mcp
+        type: SYNC
+        protocol: STREAMABLE
+        streamable-http:
+          mcp-endpoint: /mcp
+
+server:
+  # MCP_PORT (original default 8011); FastMCP bound 0.0.0.0
+  port: ${MCP_PORT:8011}
+  address: 0.0.0.0
+
+shop:
+  # Frontend/API endpoint used by the shop tools (original: APPLICATION_ENDPOINT, default localhost:8080)
+  application-endpoint: ${APPLICATION_ENDPOINT:localhost:8080}
+
+traceloop:
+  # TRACELOOP_TRACE_CONTENT (default true): record tool input/output on spans
+  trace-content: ${TRACELOOP_TRACE_CONTENT:true}
+
+otel:
+  # The original exported through Traceloop to TRACELOOP_BASE_URL (the collector's OTLP/HTTP port);
+  # OTEL_EXPORTER_OTLP_ENDPOINT still takes precedence when set.
+  exporter:
+    otlp:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:${TRACELOOP_BASE_URL:http://localhost:4318}}

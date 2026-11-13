@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+  <!-- The original shipped its logs over OTLP (LoggingHandler + BatchLogRecordProcessor). The appender is
+       wired to the SDK by the OpenTelemetry Spring Boot starter. -->
+  <appender name="OpenTelemetry"
+            class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
+    <captureExperimentalAttributes>false</captureExperimentalAttributes>
+    <captureCodeAttributes>true</captureCodeAttributes>
+  </appender>
+
+  <!-- Puts trace_id / span_id / trace_flags into the MDC for the console pattern. -->
+  <appender name="OtelMdcConsole"
+            class="io.opentelemetry.instrumentation.logback.mdc.v1_0.OpenTelemetryAppender">
+    <appender-ref ref="CONSOLE"/>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="OtelMdcConsole"/>
+    <appender-ref ref="OpenTelemetry"/>
+  </root>
+</configuration>

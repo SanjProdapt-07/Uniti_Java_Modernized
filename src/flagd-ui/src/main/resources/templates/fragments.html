@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head th:fragment="head">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="root-path" th:content="${rootPath}" content="/feature" />
+    <title data-default="Flagd-ui">Flagd-ui</title>
+    <link rel="stylesheet" th:href="${prefix} + '/assets/css/app.css'" href="/assets/css/app.css" />
+    <script defer type="text/javascript" th:src="${prefix} + '/assets/js/app.js'" src="/assets/js/app.js"></script>
+    <script th:inline="none">
+      (() => {
+        const setTheme = (theme) => {
+          if (theme === "system") {
+            localStorage.removeItem("phx:theme");
+            document.documentElement.removeAttribute("data-theme");
+          } else {
+            localStorage.setItem("phx:theme", theme);
+            document.documentElement.setAttribute("data-theme", theme);
+          }
+        };
+        setTheme(localStorage.getItem("phx:theme") || "system");
+        window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
+        window.addEventListener("phx:set-theme", ({ detail: { theme } }) => setTheme(theme));
+      })();
+    </script>
+  </head>
+  <body>
+    <nav th:fragment="navbar" class="bg-gray-800 p-4 sm:p-6">
+      <div class="container mx-auto flex items-center justify-between">
+        <a th:href="${home}" href="/feature" class="text-xl font-bold text-white">
+          Flagd Configurator
+        </a>
+        <ul class="flex space-x-2 sm:space-x-4">
+          <li>
+            <a
+              th:href="${home}"
+              href="/feature"
+              th:class="${mode == 'basic'} ? 'rounded-md px-3 py-2 text-sm font-medium bg-blue-700 text-white underline underline-offset-4 transition-all duration-200' : 'rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200'"
+              >Basic</a
+            >
+          </li>
+          <li>
+            <a
+              th:href="${prefix} + '/advanced'"
+              href="/feature/advanced"
+              th:class="${mode == 'advanced'} ? 'rounded-md px-3 py-2 text-sm font-medium bg-blue-700 text-white underline underline-offset-4 transition-all duration-200' : 'rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200'"
+              >Advanced</a
+            >
+          </li>
+          <li>
+            <a
+              th:href="${prefix} + '/scheduler'"
+              href="/feature/scheduler"
+              th:class="${mode == 'scheduler'} ? 'rounded-md px-3 py-2 text-sm font-medium bg-blue-700 text-white underline underline-offset-4 transition-all duration-200' : 'rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200'"
+              >Scheduler</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </body>
+</html>

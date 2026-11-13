@@ -1,0 +1,9 @@
+{
+  "name": "frontend-browser-smoke",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ad-hoc jsdom smoke tests for the static JavaScript layer (not part of the Gradle build)",
+  "dependencies": {
+    "jsdom": "26.1.0"
+  }
+}

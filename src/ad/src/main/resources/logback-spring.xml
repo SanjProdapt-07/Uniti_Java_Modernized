@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright The OpenTelemetry Authors
+SPDX-License-Identifier: Apache-2.0
+-->
+
+<configuration>
+    <!-- Same line format as the original log4j2.xml. The OpenTelemetry Spring Boot starter installs the
+         logback MDC appender around this appender (providing trace_id / span_id / trace_flags) and the
+         logback appender that exports logs through the OpenTelemetry SDK (OTEL_LOGS_EXPORTER). -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg trace_id=%X{trace_id} span_id=%X{span_id} trace_flags=%X{trace_flags} %n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

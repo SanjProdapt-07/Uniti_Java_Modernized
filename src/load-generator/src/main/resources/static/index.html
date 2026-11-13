@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Load Generator</title>
+<!-- All URLs are relative on purpose: Envoy serves this app under /loadgen/ and rewrites it to /. -->
+<style>
+  :root { --bg:#fff; --fg:#1b1f23; --muted:#667; --line:#d8dce0; --accent:#1f6f3f; --danger:#b3261e; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#15181b; --fg:#e6e8ea; --muted:#9aa; --line:#33393f; --accent:#4cc27a; --danger:#ff8a80; }
+  }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:14px/1.45 system-ui, sans-serif; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 16px; }
+  form { display:flex; flex-wrap:wrap; gap:12px; align-items:end; margin-bottom:16px; }
+  label { display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--muted); }
+  input { padding:6px 8px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:var(--fg); min-width:120px; }
+  button { padding:7px 14px; border:1px solid var(--line); border-radius:4px; background:var(--accent); color:#fff; cursor:pointer; }
+  button.stop { background:var(--danger); }
+  #status { margin-bottom:12px; font-weight:600; }
+  .scroll { overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; }
+  th, td { text-align:right; padding:4px 8px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align:left; }
+</style>
+</head>
+<body>
+<h1>Load Generator</h1>
+<p class="sub">Locust-compatible control surface (Java). Start or stop the simulated users and watch the statistics.</p>
+<form id="swarm">
+  <label>Number of users<input name="user_count" type="number" min="0" value="1"></label>
+  <label>Spawn rate (users/s)<input name="spawn_rate" type="number" min="0.1" step="any" value="1"></label>
+  <label>Host<input name="host" type="text" placeholder="http://frontend-proxy:8080"></label>
+  <button type="submit">Start swarming</button>
+  <button type="button" class="stop" id="stop">Stop</button>
+  <button type="button" id="reset">Reset stats</button>
+</form>
+<div id="status">State: -</div>
+<div class="scroll">
+<table>
+  <thead><tr><th>Type</th><th>Name</th><th># Requests</th><th># Fails</th><th>Median (ms)</th><th>Average (ms)</th><th>Min (ms)</th><th>Max (ms)</th><th>Avg size (bytes)</th><th>RPS</th><th>Failures/s</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+</div>
+<h2 style="font-size:16px">Failures</h2>
+<div class="scroll">
+<table><thead><tr><th>Method</th><th>Name</th><th>Error</th><th># Occurrences</th></tr></thead><tbody id="errors"></tbody></table>
+</div>
+<script>
+  const f = document.getElementById('swarm');
+  const rows = document.getElementById('rows');
+  const errors = document.getElementById('errors');
+  const status = document.getElementById('status');
+  function td(v) { const c = document.createElement('td'); c.textContent = v; return c; }
+  function fmt(n) { return (Math.round(n * 100) / 100).toString(); }
+  async function refresh() {
+    try {
+      const r = await fetch('stats/requests');
+      const d = await r.json();
+      status.textContent = 'State: ' + d.state + ' | users: ' + d.user_count + ' | RPS: ' + fmt(d.total_rps) +
+        ' | failures: ' + fmt(d.fail_ratio * 100) + '%';
+      rows.replaceChildren(...d.stats.map(s => {
+        const tr = document.createElement('tr');
+        [s.method || '', s.name, s.num_requests, s.num_failures, s.median_response_time, fmt(s.avg_response_time),
+         s.min_response_time, s.max_response_time, fmt(s.avg_content_length), fmt(s.current_rps), fmt(s.current_fail_per_sec)]
+          .forEach(v => tr.appendChild(td(v)));
+        return tr;
+      }));
+      errors.replaceChildren(...d.errors.map(e => {
+        const tr = document.createElement('tr');
+        [e.method, e.name, e.error, e.occurrences].forEach(v => tr.appendChild(td(v)));
+        return tr;
+      }));
+    } catch (e) { status.textContent = 'State: unreachable'; }
+  }
+  f.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    await fetch('swarm', { method: 'POST', body: new URLSearchParams(new FormData(f)) });
+    refresh();
+  });
+  document.getElementById('stop').addEventListener('click', async () => { await fetch('stop'); refresh(); });
+  document.getElementById('reset').addEventListener('click', async () => { await fetch('stats/reset'); refresh(); });
+  refresh();
+  setInterval(refresh, 2000);
+</script>
+</body>
+</html>

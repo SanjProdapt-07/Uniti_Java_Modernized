@@ -1,0 +1,25 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: chatbot
+  thymeleaf:
+    cache: true
+
+server:
+  # CHATBOT_ENDPOINT / CHATBOT_PORT: interface and port of the UI (originally the Gradio server)
+  address: ${CHATBOT_ENDPOINT:0.0.0.0}
+  port: ${CHATBOT_PORT:7860}
+
+agent:
+  # Agent service the chat messages are forwarded to: http://AGENT_ENDPOINT:AGENT_PORT/prompt
+  endpoint: ${AGENT_ENDPOINT:0.0.0.0}
+  port: ${AGENT_PORT:8010}
+  # AGENT_CHAT_INTERFACE_TIMEOUT: timeout in seconds of calls to the agent
+  chat-interface-timeout: ${AGENT_CHAT_INTERFACE_TIMEOUT:300}
+
+opamp:
+  server:
+    endpoint: ${OPAMP_SERVER_ENDPOINT:}
+    tls-insecure-skip-verify: ${OPAMP_SERVER_TLS_INSECURE_SKIP_VERIFY:}

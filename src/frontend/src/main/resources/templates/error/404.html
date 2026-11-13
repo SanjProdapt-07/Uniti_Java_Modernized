@@ -1,0 +1,18 @@
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+<body>
+<div id="__next">
+  <div class="error-container">
+    <h1 class="error-code">404</h1>
+    <p class="error-message">This page could not be found.</p>
+    <a class="error-home-link" href="/">Go to homepage</a>
+  </div>
+</div>
+<th:block th:replace="~{fragments/base :: scripts(null)}"></th:block>
+</body>
+</html>

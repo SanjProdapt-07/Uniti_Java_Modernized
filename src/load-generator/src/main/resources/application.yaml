@@ -1,0 +1,43 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: load-generator
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  # Locust web UI: LOCUST_WEB_PORT / LOCUST_WEB_HOST
+  port: ${LOCUST_WEB_PORT:8089}
+  address: ${LOCUST_WEB_HOST:0.0.0.0}
+  server-header: ""
+
+load-generator:
+  host: ${LOCUST_HOST:}
+  users: ${LOCUST_USERS:1}
+  spawn-rate: ${LOCUST_SPAWN_RATE:1}
+  run-time: ${LOCUST_RUN_TIME:}
+  headless: ${LOCUST_HEADLESS:false}
+  autostart: ${LOCUST_AUTOSTART:false}
+  autoquit: ${LOCUST_AUTOQUIT:-1}
+  browser-traffic-enabled: ${LOCUST_BROWSER_TRAFFIC_ENABLED:}
+  http-user-weight: ${LOCUST_HTTP_USER_WEIGHT:9}
+  browser-user-weight: ${LOCUST_BROWSER_USER_WEIGHT:1}
+  agent-endpoint: ${AGENT_ENDPOINT:agent}
+  agent-port: ${AGENT_PORT:8010}
+  # python-requests default of the original (HttpUser)
+  user-agent: python-requests/2.32.5
+
+# The OTLP protocol of the original exporters was gRPC (OTEL_EXPORTER_OTLP_ENDPOINT from the environment
+# still takes precedence over this default).
+otel:
+  exporter:
+    otlp:
+      protocol: grpc
+
+logging:
+  pattern:
+    # the original LoggingInstrumentor format, adapted to Logback
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%logger{0}] [trace_id=%X{trace_id} span_id=%X{span_id} resource.service.name=load-generator trace_sampled=%X{trace_flags}] - %msg%n"

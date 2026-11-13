@@ -1,0 +1,66 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.springframework.boot' version '4.1.2'
+}
+
+repositories {
+    mavenCentral()
+}
+
+description = 'Agent Service'
+group = "agent"
+version = "0.1.0-SNAPSHOT"
+
+def opentelemetryInstrumentationVersion = "2.31.1"
+// Spring AI 2.0.x is the release line built against Spring Boot 4.1 (its starters depend on Boot 4.1.2).
+// 2.1.x targets Spring Boot 4.2.
+def springAiVersion = "2.0.2"
+def openFeatureSdkVersion = "1.23.0"
+def flagdProviderVersion = "0.15.0"
+def openFeatureOtelHookVersion = "3.3.1"
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
+
+dependencies {
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    implementation platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:${opentelemetryInstrumentationVersion}")
+    implementation platform("org.springframework.ai:spring-ai-bom:${springAiVersion}")
+
+    implementation "org.springframework.boot:spring-boot-starter-webmvc",
+            "org.springframework.boot:spring-boot-starter-restclient",
+            "org.springframework.ai:spring-ai-openai",
+            "org.springframework.ai:spring-ai-client-chat",
+            "org.springframework.ai:spring-ai-mcp",
+            "io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter",
+            "dev.openfeature:sdk:${openFeatureSdkVersion}",
+            "dev.openfeature.contrib.providers:flagd:${flagdProviderVersion}",
+            "dev.openfeature.contrib.hooks:otel:${openFeatureOtelHookVersion}",
+            "org.yaml:snakeyaml"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test",
+            "io.opentelemetry:opentelemetry-sdk-testing"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+// Downloads the dependencies during the Docker image build so that layer is cached and
+// later builds only compile.
+tasks.register('downloadRepos', Copy) {
+    from configurations.compileClasspath
+    from configurations.runtimeClasspath
+    into layout.buildDirectory.dir('dependencies')
+}
+
+tasks.named('bootJar') {
+    archiveFileName = 'agent.jar'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

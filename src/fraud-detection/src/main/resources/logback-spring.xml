@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright The OpenTelemetry Authors
+SPDX-License-Identifier: Apache-2.0
+-->
+
+<configuration>
+    <!-- Same layout as the log4j2.xml of the Kotlin service -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg trace_id=%X{trace_id} span_id=%X{span_id} trace_flags=%X{trace_flags} %n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Puts trace_id / span_id / trace_flags of the current span into the MDC for the layout above -->
+    <appender name="CONSOLE_WITH_TRACE_IDS" class="io.opentelemetry.instrumentation.logback.mdc.v1_0.OpenTelemetryAppender">
+        <appender-ref ref="STDOUT"/>
+    </appender>
+
+    <!-- Exports log records over OTLP (done by the Java agent's log4j appender instrumentation before) -->
+    <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE_WITH_TRACE_IDS"/>
+        <appender-ref ref="OTEL"/>
+    </root>
+</configuration>

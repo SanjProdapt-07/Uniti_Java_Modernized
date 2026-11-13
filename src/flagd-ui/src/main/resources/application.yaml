@@ -1,0 +1,28 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: flagd-ui
+  thymeleaf:
+    cache: true
+
+server:
+  # Same port variable as the Phoenix release (config/runtime.exs)
+  port: ${FLAGD_UI_PORT:4000}
+  tomcat:
+    threads:
+      max: 20
+
+flagd-ui:
+  # The flagd configuration file shared with flagd (compose mounts ./src/flagd at /app/data).
+  storage-file-path: ${FLAGD_UI_STORAGE_FILE_PATH:/app/data/demo.flagd.json}
+  # Path prefix under which the front proxy (Envoy route /feature) exposes the UI.
+  root-path: ${FLAGD_UI_ROOT_PATH:/feature}
+
+otel:
+  exporter:
+    otlp:
+      # The Elixir exporter defaulted to http/protobuf, which is what compose's
+      # OTEL_EXPORTER_OTLP_ENDPOINT (collector port 4318) expects.
+      protocol: ${OTEL_EXPORTER_OTLP_PROTOCOL:http/protobuf}

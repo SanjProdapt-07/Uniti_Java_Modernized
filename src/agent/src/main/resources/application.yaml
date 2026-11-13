@@ -1,0 +1,47 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: agent
+
+server:
+  # AGENT_PORT (original default 8010), bound on 0.0.0.0 like uvicorn
+  port: ${AGENT_PORT:8010}
+  address: 0.0.0.0
+
+agent:
+  # GRAPH_RECURSION_LIMIT: LangGraph recursion limit of one agent run
+  recursion-limit: ${GRAPH_RECURSION_LIMIT:25}
+  mcp:
+    # MCP_ENABLED turns MCP mode on only for the exact string "True" (as in the original)
+    enabled: ${MCP_ENABLED:False}
+    endpoint: ${MCP_ENDPOINT:0.0.0.0}
+    port: ${MCP_PORT:8011}
+  llm:
+    base-url: ${LLM_BASE_URL:}
+    model: ${LLM_MODEL:default}
+    api-key: ${API_KEY:}
+    tls-verify: ${LLM_TLS_VERIFY:True}
+    # VCR cassettes live in ./fixtures/vcr_cassettes relative to the working directory (/app in the image)
+    use-vcr: ${USE_VCR:True}
+    vcr-match-threshold: ${VCR_MATCH_THRESHOLD:0.85}
+    cassette-dir: ${VCR_CASSETTE_DIR:fixtures/vcr_cassettes}
+
+shop:
+  # Frontend/API endpoint used by the built-in shop tools (original: APPLICATION_ENDPOINT)
+  application-endpoint: ${APPLICATION_ENDPOINT:localhost:8080}
+
+flagd:
+  host: ${FLAGD_HOST:flagd}
+  port: ${FLAGD_PORT:8013}
+
+traceloop:
+  trace-content: ${TRACELOOP_TRACE_CONTENT:true}
+
+otel:
+  # The original exported through Traceloop to TRACELOOP_BASE_URL (the collector's OTLP/HTTP port);
+  # OTEL_EXPORTER_OTLP_ENDPOINT still takes precedence when set.
+  exporter:
+    otlp:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:${TRACELOOP_BASE_URL:http://localhost:4318}}

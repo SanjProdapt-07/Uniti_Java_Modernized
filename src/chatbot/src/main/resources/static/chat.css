@@ -1,0 +1,101 @@
+/* Copyright The OpenTelemetry Authors
+   SPDX-License-Identifier: Apache-2.0 */
+
+:root {
+  --bg: #ffffff;
+  --fg: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --user-bg: #eef2ff;
+  --bot-bg: #f3f4f6;
+  --accent: #f97316;
+  --code-bg: #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0f19;
+    --fg: #e5e7eb;
+    --muted: #9ca3af;
+    --border: #1f2937;
+    --user-bg: #1e293b;
+    --bot-bg: #111827;
+    --code-bg: #1f2937;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+h1 { margin: 0 0 4px; font-size: 1.8rem; }
+.description { margin: 0 0 16px; color: var(--muted); }
+
+.chatbot {
+  height: 70vh;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.msg {
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+.msg.user { align-self: flex-end; background: var(--user-bg); white-space: pre-wrap; }
+.msg.assistant { align-self: flex-start; background: var(--bot-bg); }
+.msg.pending { color: var(--muted); font-style: italic; }
+.msg p { margin: 0 0 8px; }
+.msg p:last-child { margin-bottom: 0; }
+.msg ul, .msg ol { margin: 4px 0 8px 20px; padding: 0; }
+.msg code { background: var(--code-bg); padding: 1px 4px; border-radius: 4px; font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; }
+.msg pre { background: var(--code-bg); padding: 8px 10px; border-radius: 6px; overflow-x: auto; margin: 4px 0 8px; }
+.msg pre code { background: none; padding: 0; }
+.msg a { color: var(--accent); }
+
+#chat-form { margin-top: 12px; }
+#textbox {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+#textbox:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.samples-label { margin: 16px 0 6px; color: var(--muted); }
+.samples { display: flex; flex-wrap: wrap; gap: 8px; }
+.sample {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bot-bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.sample:hover { border-color: var(--accent); }
+.sample:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

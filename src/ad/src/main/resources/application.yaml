@@ -1,0 +1,13 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: ad
+  grpc:
+    server:
+      port: ${AD_PORT:9555}
+
+ad:
+  # Port of the Prometheus-client `/metrics` endpoint (demo_ad_served_total) scraped by the collector.
+  prometheus-port: ${AD_PROMETHEUS_PORT:9465}

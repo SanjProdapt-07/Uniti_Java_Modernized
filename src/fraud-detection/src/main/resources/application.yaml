@@ -1,0 +1,32 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: fraud-detection
+  main:
+    banner-mode: "off"
+    web-application-type: none
+  kafka:
+    # KAFKA_ADDR is required (the Kotlin service exited with "KAFKA_ADDR is not supplied" otherwise)
+    bootstrap-servers: ${KAFKA_ADDR}
+    consumer:
+      group-id: fraud-detection
+      # Read from the start of the topic so a freshly-joined consumer group still processes orders
+      # produced before it finished joining, matching the accounting consumer's behaviour. Without
+      # this the Kafka default of "latest" silently drops those orders, so fraud-detection may emit
+      # no telemetry on a quiet/cold start.
+      auto-offset-reset: earliest
+      # Keeps a poll cycle under max.poll.interval.ms when kafkaQueueProblems throttles
+      max-poll-records: 30
+      # No enable.auto.commit here (the Kotlin service used the Kafka client's 5s auto-commit).
+      # With it enabled, a Spring Kafka container that was stopped right after processing an order
+      # re-read that order after rejoining (seen in FraudDetectionKafkaIntegrationTests), so Spring
+      # Kafka commits the offsets of every processed poll batch itself (AckMode BATCH) instead.
+      # An order is therefore not redelivered when kafkaConsumerDead takes the consumer out of the
+      # group and back in.
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+
+fraud-detection:
+  topic: ${KAFKA_TOPIC:orders}

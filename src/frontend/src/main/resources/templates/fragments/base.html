@@ -1,0 +1,65 @@
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title th:text="${title}">Otel Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&amp;display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/assets/css/frontend.css">
+</head>
+<body>
+
+<!-- window.ENV bootstrap (pages/_document.tsx) and the browser-side scripts, in dependency order -->
+<th:block th:fragment="scripts(page)">
+  <script th:inline="javascript">
+    window.ENV = /*[[${env}]]*/ {};
+  </script>
+  <script src="/assets/js/session.js"></script>
+  <script src="/assets/js/vendor/frontend-otel.js"></script>
+  <script th:if="${page != null}" src="/assets/js/currency-symbols.js"></script>
+  <script th:if="${page != null}" src="/assets/js/flags.js"></script>
+  <script th:if="${page != null}" src="/assets/js/app.js"></script>
+</th:block>
+
+<header class="header" th:fragment="header">
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a class="navbar-brand" href="/"><img class="brand-img" src="/images/opentelemetry-demo-logo.png" alt=""></a>
+      <div class="controls">
+        <div class="currency-switcher">
+          <div class="currency-container">
+            <span class="selected-currency"></span>
+            <select class="currency-select" name="currency_code" data-cy="currency-switcher"></select>
+            <img class="currency-arrow" src="/icons/Chevron.svg" alt="arrow">
+          </div>
+        </div>
+        <a class="cart-icon" data-cy="cart-icon">
+          <img class="cart-icon-img" src="/icons/CartIcon.svg" alt="Cart icon" title="Cart" width="24" height="24">
+        </a>
+        <div id="cart-dropdown-root"></div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<footer class="footer" th:fragment="footer">
+  <div>
+    <p>This website is hosted for demo purpose only. It is not an actual shop.</p>
+    <p>
+      <span data-cy="session-id">session-id: </span>
+    </p>
+  </div>
+  <p>
+    @ <span th:remove="tag" th:text="${year}">2026</span> OpenTelemetry (<a href="https://github.com/open-telemetry/opentelemetry-demo">Source Code</a>)
+  </p>
+  <div class="platform-flag" th:text="${platform}">local</div>
+</footer>
+</body>
+</html>

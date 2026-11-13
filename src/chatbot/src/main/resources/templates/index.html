@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title}">Astronomy Shop agent</title>
+  <!-- All URLs are relative: the page is served behind the frontend proxy under /chatbot/ -->
+  <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+  <main class="app">
+    <h1 th:text="${title}">Astronomy Shop agent</h1>
+    <p class="description" th:text="${description}">Ask me about the astronomy shop application.</p>
+
+    <section id="chatbot" class="chatbot" role="log" aria-live="polite" aria-label="Conversation"></section>
+
+    <form id="chat-form" autocomplete="off">
+      <label for="textbox" class="sr-only">Message</label>
+      <input id="textbox" type="text" placeholder="Type a message..." autofocus>
+    </form>
+
+    <p class="samples-label">Sample questions:</p>
+    <div class="samples">
+      <button type="button" class="sample" th:each="example : ${examples}" th:text="${example}" th:attr="data-question=${example}">Example</button>
+    </div>
+  </main>
+  <script src="chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: cart
+  grpc:
+    server:
+      port: ${CART_PORT:7070}
+      # grpc.health.v1.Health is served by oteldemo.cart.HealthService (readiness flag based)
+      health:
+        enabled: false
+
+cart:
+  valkey:
+    address: ${VALKEY_ADDR:}
+    password: ${VALKEY_PASSWORD:}
+    tls: ${VALKEY_TLS:false}
+  opamp:
+    endpoint: ${OPAMP_SERVER_ENDPOINT:}
+    tls-insecure-skip-verify: ${OPAMP_SERVER_TLS_INSECURE_SKIP_VERIFY:false}
+
+otel:
+  instrumentation:
+    logback-appender:
+      experimental:
+        # the structured log parameters (userId, productId, event.name, ...) become log attributes
+        capture-key-value-pair-attributes: true

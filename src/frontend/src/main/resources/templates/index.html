@@ -1,0 +1,38 @@
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+<body data-page="home">
+<div id="__next">
+  <header th:replace="~{fragments/base :: header}"></header>
+  <main>
+    <div class="home" data-cy="home-page">
+      <div class="banner">
+        <div class="banner-image-container">
+          <img class="banner-img" src="/images/Banner.png" alt="">
+        </div>
+        <div class="banner-text">
+          <h1 class="banner-title">The best telescopes to see the world closer</h1>
+          <a href="#hot-products"><button class="btn banner-go-shopping">Go Shopping</button></a>
+        </div>
+      </div>
+      <div class="home-container">
+        <div class="home-row">
+          <div class="home-content">
+            <div class="hot-products">
+              <h1 class="hot-products-title" data-cy="hot-products" id="hot-products">Hot Products</h1>
+              <div class="product-list" data-cy="product-list" id="product-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer th:replace="~{fragments/base :: footer}"></footer>
+</div>
+<th:block th:replace="~{fragments/base :: scripts('home')}"></th:block>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: payment
+  grpc:
+    server:
+      port: ${PAYMENT_PORT:50051}
+      # No address is set: the server listens on the wildcard address, which accepts IPv4 and IPv6
+      # connections, so IPV6_ENABLED needs no separate handling (see PORTING-NOTES.md).
+
+# One JSON object per log line, like the pino logger of the Node.js service. The service name
+# follows OTEL_SERVICE_NAME (set to "payment" by compose.yaml).
+logging:
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        name: ${OTEL_SERVICE_NAME:payment}

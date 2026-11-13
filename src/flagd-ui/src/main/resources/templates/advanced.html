@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments :: head}"></head>
+  <body>
+    <div class="relative min-h-screen">
+      <nav th:replace="~{fragments :: navbar}"></nav>
+
+      <div class="container mx-auto px-4 py-8">
+        <form id="advanced-form" onsubmit="return false">
+          <textarea
+            id="advanced-content"
+            name="content"
+            class="mb-4 h-48 w-full bg-gray-700 p-3 text-sm text-gray-300 focus:border-blue-500 focus:outline-none sm:h-64 md:h-80 lg:h-96 xl:h-[32rem] 2xl:h-[48rem]"
+            cols="200"
+            th:text="${content}"
+          ></textarea>
+          <div>
+            <button
+              id="advanced-save"
+              type="button"
+              class="rounded bg-blue-500 px-8 py-4 font-medium text-white transition-colors duration-200 hover:bg-blue-600"
+            >
+              Save
+            </button>
+            <p id="advanced-unsaved" class="text-red-600" hidden>Unsaved changes</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

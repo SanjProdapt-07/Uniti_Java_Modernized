@@ -1,0 +1,20 @@
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+<body data-page="checkout">
+<div id="__next">
+  <header th:replace="~{fragments/base :: header}"></header>
+  <main>
+    <!-- Order summary (from the ?order= query parameter), recommendations and the ad are rendered by app.js -->
+    <div class="checkout" id="checkout"></div>
+    <section class="ad" data-cy="ad" id="ad"><a class="ad-link" href=""><p></p></a></section>
+  </main>
+  <footer th:replace="~{fragments/base :: footer}"></footer>
+</div>
+<th:block th:replace="~{fragments/base :: scripts('checkout')}"></th:block>
+</body>
+</html>

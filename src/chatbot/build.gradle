@@ -1,0 +1,53 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.springframework.boot' version '4.1.2'
+}
+
+repositories {
+    mavenCentral()
+}
+
+description = 'Chatbot Service'
+group = "chatbot"
+version = "0.1.0-SNAPSHOT"
+
+def opentelemetryInstrumentationVersion = "2.31.1"
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
+
+dependencies {
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    implementation platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:${opentelemetryInstrumentationVersion}")
+
+    implementation "org.springframework.boot:spring-boot-starter-webmvc",
+            "org.springframework.boot:spring-boot-starter-restclient",
+            "org.springframework.boot:spring-boot-starter-thymeleaf",
+            "io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test",
+            "io.opentelemetry:opentelemetry-sdk-testing"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+// Downloads the dependencies during the Docker image build so that layer is cached and
+// later builds only compile.
+tasks.register('downloadRepos', Copy) {
+    from configurations.compileClasspath
+    from configurations.runtimeClasspath
+    into layout.buildDirectory.dir('dependencies')
+}
+
+tasks.named('bootJar') {
+    archiveFileName = 'chatbot.jar'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

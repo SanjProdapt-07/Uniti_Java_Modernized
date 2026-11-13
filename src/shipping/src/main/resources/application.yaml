@@ -1,0 +1,35 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: shipping
+  http:
+    clients:
+      # awc, the HTTP client of the Rust service, times out after 5 seconds by default.
+      connect-timeout: 5s
+      read-timeout: 5s
+  jackson:
+    deserialization:
+      # serde does not turn 1.5 into 1 for an integer field
+      accept-float-as-int: false
+    mapper:
+      # ... nor "5" into 5, nor 5 into "5"
+      allow-coercion-of-scalars: false
+
+server:
+  # SHIPPING_PORT is required by the Rust service; 50050 is the value of .env
+  port: ${SHIPPING_PORT:50050}
+
+shipping:
+  ipv6-enabled: ${IPV6_ENABLED:false}
+
+quote:
+  addr: ${QUOTE_ADDR:http://quote:8090}
+
+otel:
+  instrumentation:
+    logback-appender:
+      experimental:
+        # log events carry their fields (quote_service_addr, tracking_id, ...) as attributes
+        capture-key-value-pair-attributes: true

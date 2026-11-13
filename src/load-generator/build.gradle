@@ -1,0 +1,70 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.springframework.boot' version '4.1.2'
+}
+
+repositories {
+    mavenCentral()
+}
+
+description = 'Load Generator Service'
+group = "loadgenerator"
+version = "0.1.0-SNAPSHOT"
+
+def opentelemetryInstrumentationVersion = "2.31.1"
+def openFeatureSdkVersion = "1.23.0"
+def flagdProviderVersion = "0.15.0"
+def openFeatureOtelHookVersion = "3.3.1"
+def playwrightVersion = "1.65.0"
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
+
+dependencies {
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    implementation platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:${opentelemetryInstrumentationVersion}")
+
+    implementation "org.springframework.boot:spring-boot-starter-webmvc",
+            "io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter",
+            "io.opentelemetry.instrumentation:opentelemetry-java-http-client:${opentelemetryInstrumentationVersion}-alpha",
+            "io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:${opentelemetryInstrumentationVersion}-alpha",
+            "io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0:${opentelemetryInstrumentationVersion}-alpha",
+            "dev.openfeature:sdk:${openFeatureSdkVersion}",
+            "dev.openfeature.contrib.providers:flagd:${flagdProviderVersion}",
+            "dev.openfeature.contrib.hooks:otel:${openFeatureOtelHookVersion}"
+
+    // Optional browser traffic (LOCUST_BROWSER_TRAFFIC_ENABLED). Only touched when that flag is on.
+    // The transitive slf4j-simple / JUnit dependencies of the Playwright POM are not wanted at runtime.
+    implementation("com.microsoft.playwright:playwright:${playwrightVersion}") {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+        exclude group: 'org.junit.jupiter'
+        exclude group: 'org.junit.platform'
+    }
+
+    testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test",
+            "org.mockito:mockito-junit-jupiter",
+            "io.opentelemetry:opentelemetry-sdk-testing"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+// Downloads the dependencies during the Docker image build so that layer is cached and
+// later builds only compile.
+tasks.register('downloadRepos', Copy) {
+    from configurations.compileClasspath
+    from configurations.runtimeClasspath
+    into layout.buildDirectory.dir('dependencies')
+}
+
+tasks.named('bootJar') {
+    archiveFileName = 'load-generator.jar'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

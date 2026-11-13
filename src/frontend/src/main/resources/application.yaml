@@ -1,0 +1,47 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: frontend
+  threads:
+    virtual:
+      enabled: true
+  thymeleaf:
+    cache: true
+  grpc:
+    client:
+      channel:
+        ad:
+          target: ${AD_ADDR:localhost:9555}
+        cart:
+          target: ${CART_ADDR:localhost:7070}
+        checkout:
+          target: ${CHECKOUT_ADDR:localhost:5050}
+        currency:
+          target: ${CURRENCY_ADDR:localhost:7001}
+        product-catalog:
+          target: ${PRODUCT_CATALOG_ADDR:localhost:3550}
+        recommendation:
+          target: ${RECOMMENDATION_ADDR:localhost:9001}
+
+server:
+  # compose.yaml sets PORT=${FRONTEND_PORT}; the Next.js standalone server read PORT as well.
+  port: ${PORT:${FRONTEND_PORT:8080}}
+  error:
+    whitelabel:
+      enabled: false
+
+logging:
+  level:
+    root: ${LOG_LEVEL:info}
+
+# HTTP shipping service (Shipping.gateway.ts): http://shipping:50050
+shipping:
+  addr: ${SHIPPING_ADDR:}
+
+frontend:
+  env-platform: ${ENV_PLATFORM:local}
+  web-otel-service-name: ${WEB_OTEL_SERVICE_NAME:frontend-web}
+  public-otel-traces-endpoint: ${PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:}
+  otel-collector-host: ${OTEL_COLLECTOR_HOST:otel-collector}

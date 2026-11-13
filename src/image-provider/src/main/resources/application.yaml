@@ -1,0 +1,32 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: image-provider
+  threads:
+    virtual:
+      enabled: true
+  web:
+    resources:
+      # the static handler is registered explicitly (StaticContentConfiguration)
+      add-mappings: false
+
+server:
+  port: ${IMAGE_PROVIDER_PORT:8081}
+  server-header: ""
+  error:
+    whitelabel:
+      enabled: false
+
+image-provider:
+  # nginx: "root /static;". The Dockerfile copies src/image-provider/static to this location.
+  static-root: ${IMAGE_PROVIDER_STATIC_ROOT:file:./static/}
+
+# nginx: otel_exporter { endpoint ${OTEL_COLLECTOR_HOST}:${OTEL_COLLECTOR_PORT_GRPC} } (OTLP/gRPC).
+# An explicit OTEL_EXPORTER_OTLP_ENDPOINT / OTEL_EXPORTER_OTLP_PROTOCOL still takes precedence.
+otel:
+  exporter:
+    otlp:
+      endpoint: http://${OTEL_COLLECTOR_HOST:localhost}:${OTEL_COLLECTOR_PORT_GRPC:4317}
+      protocol: grpc

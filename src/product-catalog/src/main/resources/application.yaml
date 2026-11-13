@@ -1,0 +1,32 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+spring:
+  application:
+    name: product-catalog
+  grpc:
+    server:
+      port: ${PRODUCT_CATALOG_PORT:3550}
+
+# The Go service connected with lib/pq using DB_CONNECTION_STRING, e.g.
+# postgres://astronomy_user:astronomy_password@astronomy-db/astronomy_db?sslmode=disable
+db:
+  connection-string: ${DB_CONNECTION_STRING:}
+
+# OpAMP is enabled when OPAMP_SERVER_ENDPOINT is set, like in the Go service.
+opamp:
+  server:
+    endpoint: ${OPAMP_SERVER_ENDPOINT:}
+    tls-insecure-skip-verify: ${OPAMP_SERVER_TLS_INSECURE_SKIP_VERIFY:false}
+
+otel:
+  instrumentation:
+    jdbc:
+      experimental:
+        # SQLCommenter appends the trace context to the SQL (otelsql.WithSQLCommenter(true))
+        sqlcommenter:
+          enabled: true
+    logback-appender:
+      experimental:
+        # log events carry their fields (products, demo.product.id, ...) as attributes
+        capture-key-value-pair-attributes: true

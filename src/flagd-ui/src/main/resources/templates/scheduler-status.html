@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <!-- Returned as one document by the status poll; the page embeds the parts separately. -->
+    <div th:fragment="poll">
+      <div th:replace="~{scheduler-status :: status}"></div>
+      <div th:replace="~{scheduler-status :: actions}"></div>
+      <div th:replace="~{scheduler-status :: history}"></div>
+    </div>
+
+    <div th:fragment="status" id="scheduler-status" class="mb-6 rounded-md bg-gray-800 p-6 text-gray-300 shadow-md">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-lg font-semibold" th:text="${scheduler.title}">Scheduler stopped</p>
+          <p class="text-sm">
+            Activates randomly picked flags each interval, then reverts them to normal.
+          </p>
+        </div>
+        <span
+          th:class="'rounded-full px-3 py-1 text-sm font-medium ' + (${scheduler.running} ? 'bg-green-700 text-white' : 'bg-gray-700 text-gray-300')"
+          th:text="${scheduler.badge}"
+          >Idle</span
+        >
+      </div>
+
+      <dl th:if="${scheduler.running}" class="mt-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
+        <div>
+          <dt class="font-medium text-gray-400">Interval</dt>
+          <dd th:text="${scheduler.intervalCount}">1</dd>
+        </div>
+        <div>
+          <dt class="font-medium text-gray-400">Seed</dt>
+          <dd th:text="${scheduler.seed}">42</dd>
+        </div>
+        <div>
+          <dt class="font-medium text-gray-400">
+            Currently active (<span th:text="${scheduler.activeCount}">0</span> of <span th:text="${scheduler.concurrency}">1</span>)
+          </dt>
+          <dd>
+            <ul th:if="${!scheduler.active.isEmpty()}">
+              <li th:each="activation : ${scheduler.active}">
+                <span class="text-warning" th:text="${activation.flag} + ' = ' + ${activation.variant}">flag = on</span>
+                <span class="text-gray-400">(<span th:text="${activation.left}">1s</span> left)</span>
+              </li>
+            </ul>
+            <span th:if="${scheduler.active.isEmpty()}" class="text-gray-400">
+              nothing &mdash; next in <span th:text="${scheduler.nextLabel}">unknown</span>
+            </span>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <div th:fragment="actions" id="scheduler-actions" class="mt-6 flex gap-4">
+      <button
+        type="submit"
+        class="rounded bg-blue-500 px-8 py-4 font-medium text-white transition-colors duration-200 hover:bg-blue-600"
+        th:text="${scheduler.running} ? 'Restart' : 'Start'"
+      >
+        Start
+      </button>
+      <button
+        th:if="${scheduler.running}"
+        type="button"
+        data-action="stop"
+        class="rounded bg-red-600 px-8 py-4 font-medium text-white transition-colors duration-200 hover:bg-red-700"
+      >
+        Stop
+      </button>
+    </div>
+
+    <div th:fragment="history" id="scheduler-history">
+      <div th:if="${!scheduler.history.isEmpty()}" class="mt-8 rounded-md bg-gray-800 p-6 text-gray-300">
+        <p class="mb-4 text-lg font-semibold">Recent activations</p>
+        <ul class="text-sm">
+          <li
+            th:each="entry : ${scheduler.history}"
+            class="flex justify-between border-b border-gray-700 py-2 last:border-b-0"
+          >
+            <span th:text="${entry.flag} + ' = ' + ${entry.variant}">flag = on</span>
+            <span class="text-gray-400"
+              ><span th:text="${entry.startedAt}">12:00:00 UTC</span> for <span th:text="${entry.duration}">1s</span></span
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

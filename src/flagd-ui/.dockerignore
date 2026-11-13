@@ -1,0 +1,15 @@
+# This file excludes paths from the Docker build context.
+
+.dockerignore
+.git
+!.git/HEAD
+!.git/refs
+
+# Build output and local tooling
+/.gradle/
+/build/
+/bin/
+/deps/
+/node_modules/
+/data/
+*.class

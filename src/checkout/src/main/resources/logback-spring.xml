@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright The OpenTelemetry Authors
+  SPDX-License-Identifier: Apache-2.0
+-->
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+  <!-- Exports the logs through the OpenTelemetry SDK (the Go service used otelslog). The
+       OpenTelemetry Spring Boot starter installs the SDK into this appender at startup. -->
+  <appender name="OpenTelemetry"
+            class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
+    <keyValuePairAttributesIncluded>*</keyValuePairAttributesIncluded>
+    <mdcAttributesIncluded>*</mdcAttributesIncluded>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="OpenTelemetry"/>
+  </root>
+</configuration>

@@ -1,0 +1,17 @@
+# Gradle / Java build output
+/.gradle/
+/build/
+/bin/
+*.class
+
+# Tailwind rebuild input (see README.md, "Rebuilding the CSS")
+/deps/
+/node_modules/
+
+# Local flagd configuration copy for development
+/data/
+
+# IDE
+.idea/
+*.iml
+.vscode/
