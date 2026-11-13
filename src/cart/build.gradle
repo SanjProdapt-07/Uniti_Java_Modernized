@@ -24,7 +24,7 @@ def opentelemetryInstrumentationVersion = "2.31.1"
 def openFeatureSdkVersion = "1.23.0"
 def flagdProviderVersion = "0.15.0"
 def openFeatureOtelHookVersion = "3.3.1"
-def opampClientVersion = "1.59.0-alpha"
+def opampClientVersion = "1.62.1-alpha"
 
 tasks.withType(JavaCompile).configureEach {
     options.release = 21
