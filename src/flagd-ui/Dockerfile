@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-FROM --platform=${BUILDPLATFORM} docker.io/library/eclipse-temurin:21-jdk AS builder
+FROM --platform=${BUILDPLATFORM} docker.io/library/eclipse-temurin:24-jdk AS builder
 WORKDIR /usr/src/app/
 
 COPY ./src/flagd-ui/gradlew* ./src/flagd-ui/settings.gradle* ./src/flagd-ui/build.gradle ./
@@ -20,7 +20,7 @@ RUN ./gradlew --no-daemon test bootJar
 
 # -----------------------------------------------------------------------------
 
-FROM docker.io/library/eclipse-temurin:21-jre
+FROM docker.io/library/eclipse-temurin:24-jre
 
 WORKDIR /app
 
